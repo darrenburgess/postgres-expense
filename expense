@@ -4,13 +4,34 @@ require 'pg'
 
 db = PG.connect(dbname: 'expenses')
 
-result = db.exec "SELECT * FROM expenses;"
+argument = ARGV.first
 
-result.each do |tuple|
-  columns = [ tuple['id'].rjust(3),
-              tuple['created_on'].rjust(10),
-              tuple['amount'].rjust(12),
-              tuple['memo'] ]
+def print_list(db)
+  result = db.exec "SELECT * FROM expenses;"
 
-  puts columns.join ' | '
+  result.each do |tuple|
+    columns = [ tuple['id'].rjust(3),
+                tuple['created_on'].rjust(10),
+                tuple['amount'].rjust(12),
+                tuple['memo'] ]
+
+    puts columns.join ' | '
+  end
 end
+
+def print_help
+  puts <<HELP
+An expense recording system
+
+Commands:
+
+add AMOUNT MEMO [DATE] - record a new expense
+clear - delete all expenses
+list - list all expenses
+delete NUMBER - remove expense with id NUMBER
+search QUERY - list expenses with a matching memo field
+HELP
+end
+
+print_list(db) if argument == 'list'
+print_help if argument == 'help'
