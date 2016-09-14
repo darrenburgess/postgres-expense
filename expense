@@ -6,6 +6,11 @@ db = PG.connect(dbname: 'expenses')
 
 result = db.exec "SELECT * FROM expenses;"
 
-result.each do |row|
-  puts "#{row['id']} | #{row['created_on']} | #{row['amount']} | #{row['memo']}"
+result.each do |tuple|
+  columns = [ tuple['id'].rjust(3),
+              tuple['created_on'].rjust(10),
+              tuple['amount'].rjust(12),
+              tuple['memo'] ]
+
+  puts columns.join ' | '
 end
