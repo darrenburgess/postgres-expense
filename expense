@@ -1,10 +1,27 @@
 #! /usr/bin/env ruby
 
 require 'pg'
+require 'pry'
 
 db = PG.connect(dbname: 'expenses')
 
-argument = ARGV.first
+arguments = ARGV
+
+def message(text)
+  puts text
+end
+
+def valid_arguments?(arguments)
+  if arguments[0] == 'add'&& (arguments[1].nil? || arguments[2].nil?)
+    false
+  else
+    true
+  end
+end
+
+command = arguments[0]
+amount = arguments[1]
+memo = arguments[2]
 
 def print_list(db)
   result = db.exec "SELECT * FROM expenses;"
@@ -33,5 +50,18 @@ def print_help
   HELP
 end
 
-print_list(db) if argument == 'list'
-print_help if argument == 'help'
+def add_expense(db, amount, memo)
+  db.exec("INSERT INTO expenses (amount, memo) VALUES (#{amount.to_f}, '#{memo}')")
+end
+
+if command == 'list' 
+  print_list(db) 
+elsif command == 'help'
+  print_help
+elsif command == 'add'
+  if valid_arguments? arguments
+    add_expense(db, amount, memo)
+  else
+    message 'You must provide an amount and memo.'
+  end
+end
