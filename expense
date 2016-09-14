@@ -20,17 +20,17 @@ def print_list(db)
 end
 
 def print_help
-  puts <<HELP
-An expense recording system
+  puts <<~HELP
+    An expense recording system
 
-Commands:
-
-add AMOUNT MEMO [DATE] - record a new expense
-clear - delete all expenses
-list - list all expenses
-delete NUMBER - remove expense with id NUMBER
-search QUERY - list expenses with a matching memo field
-HELP
+    Commands:
+    
+    add AMOUNT MEMO [DATE] - record a new expense
+    clear - delete all expenses
+    list - list all expenses
+    delete NUMBER - remove expense with id NUMBER
+    search QUERY - list expenses with a matching memo field
+  HELP
 end
 
 print_list(db) if argument == 'list'
