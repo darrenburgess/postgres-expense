@@ -51,7 +51,8 @@ def print_help
 end
 
 def add_expense(db, amount, memo)
-  db.exec("INSERT INTO expenses (amount, memo) VALUES (#{amount.to_f}, '#{memo}')")
+  db.exec("INSERT INTO expenses (amount, memo) 
+           VALUES (#{amount.to_f}, '#{db.escape_string(memo)}')")
 end
 
 if command == 'list' 
