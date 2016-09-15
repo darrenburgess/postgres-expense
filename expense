@@ -3,7 +3,7 @@
 require 'pg'
 require 'pry'
 
-db = PG.connect(dbname: 'expenses')
+@connection = PG.connect(dbname: 'expenses')
 
 arguments = ARGV
 
@@ -23,8 +23,8 @@ command = arguments[0]
 amount = arguments[1]
 memo = arguments[2]
 
-def print_list(db)
-  result = db.exec "SELECT * FROM expenses;"
+def print_list
+  result = @connection.exec "SELECT * FROM expenses;"
 
   result.each do |tuple|
     columns = [ tuple['id'].rjust(3),
@@ -56,12 +56,12 @@ def add_expense(amount, memo)
 end
 
 if command == 'list' 
-  print_list(db) 
+  print_list
 elsif command == 'help'
   print_help
 elsif command == 'add'
   if valid_arguments? arguments
-    add_expense(db, amount, memo)
+    add_expense(amount, memo)
   else
     message 'You must provide an amount and memo.'
   end
