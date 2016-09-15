@@ -8,7 +8,7 @@ class ExpenseData
     @connection = PG.connect(dbname: 'expenses')
   end
 
-  def list_expense
+  def list_expenses
     result = @connection.exec "SELECT * FROM expenses;"
 
     result.each do |tuple|
@@ -27,15 +27,10 @@ class ExpenseData
   end
 end
 
-cli = CLI.new
-
 class CLI
   def initialize
     @application = ExpenseData.new
     @arguments = ARGV
-    @command = arguments[0]
-    @amount = arguments[1]
-    @memo = arguments[2]
   end
 
   def print_help
@@ -53,7 +48,7 @@ class CLI
   end
 
   def valid_arguments?
-    if arguments[0] == 'add'&& (arguments[1].nil? || arguments[2].nil?)
+    if @arguments[0] == 'add'&& (@arguments[1].nil? || @arguments[2].nil?)
       false
     else
       true
@@ -61,16 +56,20 @@ class CLI
   end
 
   def run(arguments) 
+    command = arguments[0]
+    amount = arguments[1]
+    memo = arguments[2]
+
     if command == 'list' 
-      print_list
-    elsif command == 'help'
-      print_help
+      @application.list_expenses
     elsif command == 'add'
-      if valid_arguments? arguments
-        add_expense(amount, memo)
+      if valid_arguments?
+        @application.add_expense(amount, memo)
       else
         message 'You must provide an amount and memo.'
       end
+    else
+      print_help
     end
   end
 
