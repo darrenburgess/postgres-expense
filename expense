@@ -1,6 +1,7 @@
 #! /usr/bin/env ruby
 
 require 'pg'
+require 'io/console'
 require 'pry'
 
 class ExpenseData
@@ -37,6 +38,12 @@ class ExpenseData
     else
       puts "There is no expense with the id '#{id}'"
     end
+  end
+
+  def clear_expenses
+    sql = "DELETE FROM expenses"
+    @connection.exec_params(sql, [])
+    puts 'All expenses have been deleted'
   end
 
   private
@@ -83,6 +90,19 @@ class CLI
     end
   end
 
+  def delete_all_confirmed?
+    response = nil
+    puts 'This will remove all expenses. Are you sure? (y/n)'
+
+    loop do
+      response = $stdin.gets.chomp.downcase
+      break response if %w(y n).include? response
+      puts 'Please enter y to delete all expenses. Enter n to cancel.'
+    end
+
+    true if response == 'y'
+  end
+
   def run(arguments) 
     command = arguments[0]
     amount = arguments[1]
@@ -102,6 +122,8 @@ class CLI
       @application.search_expenses(search_text)
     elsif command == 'delete'
       @application.delete_expense(expense_id)
+    elsif command == 'clear'
+      @application.clear_expenses if delete_all_confirmed?
     else
       print_help
     end
