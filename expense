@@ -51,6 +51,9 @@ class ExpenseData
   def print_expenses(result)
     puts 'No results found' if result.count == 0
 
+    result_count = result.ntuples > 0 ? result.ntuples : 'no'
+    puts "There are #{result_count} expenses"
+
     result.each do |tuple|
       columns = [ tuple['id'].rjust(3),
                   tuple['created_on'].rjust(10),
@@ -59,6 +62,16 @@ class ExpenseData
 
       puts columns.join ' | '
     end
+
+    print_sum(result) if result.ntuples > 0
+  end
+
+  def print_sum(result)
+    sum = result.inject(0) do |sum, tuple|
+      sum + tuple['amount'].to_f
+    end
+    puts "-" * 50 if result.ntuples > 0
+    puts "Total: #{sum.to_s.rjust(24)}"
   end
 end
 
