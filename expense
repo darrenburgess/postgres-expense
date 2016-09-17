@@ -7,6 +7,7 @@ require 'pry'
 class ExpenseData
   def initialize
     @connection = PG.connect(dbname: 'expenses')
+    setup_schema
   end
 
   def list_expenses
@@ -48,9 +49,19 @@ class ExpenseData
 
   private
 
-  def print_expenses(result)
-    puts 'No results found' if result.count == 0
+  def setup_schema
+    sql = "SELECT COUNT(*) FROM information_schema.tables
+           WHERE table_schema = 'public' AND table_name ='expenses';"
+    count = @connection.exec_params(sql, [])
+    create_schema if count.first['count'] == '0'
+  end
 
+  def create_schema
+    sql = File.read('./schema.sql')
+    @connection.exec_params(sql, [])
+  end
+
+  def print_expenses(result)
     result_count = result.ntuples > 0 ? result.ntuples : 'no'
     puts "There are #{result_count} expenses"
 
